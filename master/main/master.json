@@ -1,0 +1,10 @@
+{
+  "api_port": 8087,
+  "api_read_timeout": 5000,
+  "api_write_timeout": 5000,
+  "etcdEndpoints": [
+    "10.70.93.216:2379"
+  ],
+  "etcdDialTimeout": 5000,
+  "staticDir": "D:/data/Go/uxinFort/pro1/src/github.com/sishen007/gocrontab/master/main/webroot"
+}
