@@ -1,8 +1,8 @@
 package worker
 
 import (
-	"context"
 	"github.com/sishen007/gocrontab/common"
+	"math/rand"
 	"os/exec"
 	"runtime"
 	"time"
@@ -38,6 +38,8 @@ func (executor *Executor) ExecuteJob(info *common.JobExecuteInfo) {
 
 		// 首先获取分布式锁
 		// 任务执行完成后,释放锁
+		// 随机睡眠0-1s(为了多个worker进程可以抢锁均匀)
+		time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
 		err = jobLock.TryLock()
 		defer jobLock.Unlock()
 		if err != nil { // 上锁失败
@@ -49,9 +51,9 @@ func (executor *Executor) ExecuteJob(info *common.JobExecuteInfo) {
 
 			// 执行shell命令
 			if runtime.GOOS == "windows" {
-				cmd = exec.CommandContext(context.TODO(), "cmd", "/C", info.Job.Command)
+				cmd = exec.CommandContext(info.CancelCtx, "cmd", "/C", info.Job.Command)
 			} else {
-				cmd = exec.CommandContext(context.TODO(), "/bin/bash", "-c", info.Job.Command)
+				cmd = exec.CommandContext(info.CancelCtx, "/bin/bash", "-c", info.Job.Command)
 			}
 			// 执行并捕获输出
 			output, err = cmd.CombinedOutput()

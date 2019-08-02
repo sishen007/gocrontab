@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/gorhill/cronexpr"
 	"strings"
@@ -36,9 +37,11 @@ type JobSchedulePlan struct {
 
 // 任务正在执行表
 type JobExecuteInfo struct {
-	Job      *Job
-	PlanTime time.Time // 理论上调度时间
-	RealTime time.Time // 实际调度时间
+	Job        *Job
+	PlanTime   time.Time          // 理论上调度时间
+	RealTime   time.Time          // 实际调度时间
+	CancelCtx  context.Context    // 任务command的context
+	CancelFunc context.CancelFunc // 用于取消command执行
 }
 
 // 任务执行结果
@@ -48,6 +51,18 @@ type JobExecuteResult struct {
 	Err         error           // 执行错误
 	StartTime   time.Time       // 开始时间
 	EndTime     time.Time       // 结束时间
+}
+
+// 任务执行日志
+type JobLog struct {
+	JobName      string `bson:"jobName"`      // 任务名字
+	Command      string `bson:"command"`      // 脚本命令
+	Err          string `bson:"err"`          // 错误原因
+	Output       string `bson:"output"`       // 脚本输出
+	PlanTime     int64  `bson:"planTime"`     // 计划开始时间
+	ScheduleTime int64  `bson:"scheduleTime"` // 实际调度时间
+	StartTime    int64  `bson:"startTime"`    // 任务执行开始时间
+	EndTime      int64  `bson:"endTime"`      // 任务执行结束时间
 }
 
 // 反序列化job
@@ -79,6 +94,16 @@ func BuildResponse(errno int, msg string, data interface{}) (resp []byte, err er
 // 从etcd的key中提取任务名: 从/cron/jobs/job1 中过滤/cron/jobs/
 func ExtractJobName(jobKey string) string {
 	return strings.TrimPrefix(jobKey, JOB_SAVE_DIR)
+}
+
+// 从etcd的key中提取任务名: 从/cron/killer/job1 中过滤/cron/killer/
+func ExtractKillerName(killerKey string) string {
+	return strings.TrimPrefix(killerKey, JOB_KILLER_DIR)
+}
+
+// 日志批次
+type LogBatch struct {
+	Logs []interface{} // 多条日志
 }
 
 // 构造任务事件
@@ -115,5 +140,6 @@ func BuildJobExecuteInfo(jobSchedulePlan *JobSchedulePlan) (jobExecuteInfo *JobE
 		PlanTime: jobSchedulePlan.NextTime,
 		RealTime: time.Now(),
 	}
+	jobExecuteInfo.CancelCtx, jobExecuteInfo.CancelFunc = context.WithCancel(context.TODO())
 	return
 }
