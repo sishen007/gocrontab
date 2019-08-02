@@ -1,0 +1,6 @@
+{
+  "etcdEndpoints": [
+    "10.70.93.216:2379"
+  ],
+  "etcdDialTimeout": 5000
+}
