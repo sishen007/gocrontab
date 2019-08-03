@@ -12,12 +12,14 @@ var (
 
 // 程序配置
 type Config struct {
-	ApiPort         int      `json:"api_port"`
-	ApiReadTimeout  int      `json:"api_read_timeout"`
-	ApiWriteTimeout int      `json:"api_write_timeout"`
-	EtcdEndpoints   []string `json:"etcdEndpoints"`
-	EtcdDialTimeout int      `json:"etcdDialTimeout"`
-	StaticDir       string   `json:"staticDir"`
+	ApiPort               int      `json:"api_port"`
+	ApiReadTimeout        int      `json:"api_read_timeout"`
+	ApiWriteTimeout       int      `json:"api_write_timeout"`
+	EtcdEndpoints         []string `json:"etcdEndpoints"`
+	EtcdDialTimeout       int      `json:"etcdDialTimeout"`
+	StaticDir             string   `json:"staticDir"`
+	MongodbUri            string   `json:"mongodbUri"`
+	MongodbConnectTimeout int      `json:"mongodbConnectTimeout"`
 }
 
 func InitConfig(filename string) (err error) {

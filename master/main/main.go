@@ -37,6 +37,17 @@ func main() {
 	if err = master.InitConfig(confFile); err != nil {
 		goto ERR
 	}
+
+	// 启动服务发现管理器
+	if err = master.InitWorkerMgr(); err != nil {
+		goto ERR
+	}
+
+	// 启动日志管理器
+	if err = master.InitLogMgr(); err != nil {
+		goto ERR
+	}
+
 	// 启动任务管理器
 	if err = master.InitJobMgr(); err != nil {
 		goto ERR

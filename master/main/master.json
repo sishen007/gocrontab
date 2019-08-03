@@ -6,5 +6,7 @@
     "10.70.93.216:2379"
   ],
   "etcdDialTimeout": 5000,
-  "staticDir": "D:/data/Go/uxinFort/pro1/src/github.com/sishen007/gocrontab/master/main/webroot"
+  "staticDir": "D:/data/Go/uxinFort/pro1/src/github.com/sishen007/gocrontab/master/main/webroot",
+  "mongodbUri": "mongodb://10.70.93.216:27017",
+  "mongodbConnectTimeout": 5000
 }

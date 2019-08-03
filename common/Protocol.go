@@ -55,14 +55,24 @@ type JobExecuteResult struct {
 
 // 任务执行日志
 type JobLog struct {
-	JobName      string `bson:"jobName"`      // 任务名字
-	Command      string `bson:"command"`      // 脚本命令
-	Err          string `bson:"err"`          // 错误原因
-	Output       string `bson:"output"`       // 脚本输出
-	PlanTime     int64  `bson:"planTime"`     // 计划开始时间
-	ScheduleTime int64  `bson:"scheduleTime"` // 实际调度时间
-	StartTime    int64  `bson:"startTime"`    // 任务执行开始时间
-	EndTime      int64  `bson:"endTime"`      // 任务执行结束时间
+	JobName      string `json:"jobName" bson:"jobName"`           // 任务名字
+	Command      string `json:"command" bson:"command"`           // 脚本命令
+	Err          string `json:"err" bson:"err"`                   // 错误原因
+	Output       string `json:"output" bson:"output"`             // 脚本输出
+	PlanTime     int64  `json:"planTime" bson:"planTime"`         // 计划开始时间
+	ScheduleTime int64  `json:"scheduleTime" bson:"scheduleTime"` // 实际调度时间
+	StartTime    int64  `json:"startTime" bson:"startTime"`       // 任务执行开始时间
+	EndTime      int64  `json:"endTime" bson:"endTime"`           // 任务执行结束时间
+}
+
+// 日志查询过滤条件
+type JobLogFilter struct {
+	JobName string `bson:"jobName"` // {startTime:-1}
+}
+
+// 日志查询排序条件按开始时间倒叙
+type SortLogByStartTime struct {
+	SortOrder int `bson:"startTime"`
 }
 
 // 反序列化job
@@ -99,6 +109,11 @@ func ExtractJobName(jobKey string) string {
 // 从etcd的key中提取任务名: 从/cron/killer/job1 中过滤/cron/killer/
 func ExtractKillerName(killerKey string) string {
 	return strings.TrimPrefix(killerKey, JOB_KILLER_DIR)
+}
+
+// 从etcd的key中提取任务名: 从/cron/workers/192.168.1.1 中过滤/cron/workers/
+func ExtractWorkerIPName(workerKey string) string {
+	return strings.TrimPrefix(workerKey, JOB_WORKER_DIR)
 }
 
 // 日志批次
